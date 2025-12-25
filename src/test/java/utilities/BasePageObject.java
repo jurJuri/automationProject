@@ -1,6 +1,7 @@
 package utilities;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -11,7 +12,7 @@ import java.time.Duration;
 
 public class BasePageObject {
     private ElementLocatorFactory rootFactory;
-    private final Duration defaultDuration = Duration.ofMillis(2);
+    private final Duration defaultDuration = Duration.ofSeconds(10);;
     private BaseInformation baseInformation;
     private WaitUtils waitUtils;
     private WebElementUtils webElementUtils;
@@ -64,4 +65,5 @@ public class BasePageObject {
     public BaseInformation getBaseInformation() {
         return baseInformation;
     }
+
 }

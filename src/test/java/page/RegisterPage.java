@@ -2,10 +2,12 @@ package page;
 
 
 import elements.RegisterPageElements;
+import org.openqa.selenium.WebElement;
 import utilities.BaseInformation;
 import utilities.BasePageObject;
 import org.openqa.selenium.support.PageFactory;
 import globals.GlobalVariables;
+import utilities.DataStore;
 
 public class RegisterPage {
     BasePageObject basePageObject = new BasePageObject(BaseInformation.getBaseInformation());
@@ -32,6 +34,13 @@ public class RegisterPage {
                 .waitForElementClickable(registerPageElements.AccountButton)
                 .click();
     }
+    public void clickWomanButton(){
+        basePageObject
+                .getWaitUtils()
+                .waitForElementClickable(registerPageElements.WomanButton)
+                .click();
+    }
+
 
     public void clickRegisterButton(){
         basePageObject
@@ -54,11 +63,21 @@ public class RegisterPage {
                 .sendKeysToElementWithWait(registerPageElements.lastNameRegister,lastName,2);
     }
 
-    public void setEmail(String email){
+    public void setEmail(){
+        // 1. Create the final email string first so we can save it exactly as it is
+        String email = "user" + System.currentTimeMillis() + "@gmail.com";
+
+        // 2. Locate the element and send the keys
         basePageObject
                 .getWaitUtils()
                 .waitForElementVisible(registerPageElements.emailRegister)
-                .sendKeys(email+Math.random()+"@gmail.com");
+                .sendKeys(email);
+
+        // 3. Save THIS EXACT string to your properties file using the DataStore utility
+        DataStore.saveEmail(email);
+
+        // Optional: Print to console so you can double-check it during the test
+        System.out.println("Registered with email: " + email);
     }
 
     public void setPassword(){
@@ -71,14 +90,27 @@ public class RegisterPage {
     }
 
     public void clickRegisterButtonForm(){
-        basePageObject
-                .getWaitUtils()
-                .waitForElementClickable(registerPageElements.RegisterButton)
-                .click();
+        WebElement button = registerPageElements.RegisterButton;
+        basePageObject.getWaitUtils().waitForElementVisible(button);
+        // Use JS click instead of regular click
+        basePageObject.getWaitUtils().clickWithJS(button);
+
     }
 
     public boolean checkRegister(){
         return registerPageElements.successMessageRegister.isDisplayed();
     }
+
+    public boolean checkRegisterPageOpen(){
+        return registerPageElements.registerText.isDisplayed();
+    }
+
+    public void clickLogoutButton(){
+        basePageObject
+                .getWaitUtils()
+                .waitForElementClickable(registerPageElements.logOutButton)
+                .click();
+    }
+
 
 }

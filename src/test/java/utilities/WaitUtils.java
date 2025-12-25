@@ -11,7 +11,9 @@ public class WaitUtils {
     private BaseInformation baseInformation;
     private Duration defaultDuration;
 
-    private WebDriver driver = BaseInformation.getDriver();
+    private WebDriver getDriver() {
+        return BaseInformation.getDriver();
+    }
     public WaitUtils(BaseInformation baseInformation, Duration defaultDuration) {
         this.baseInformation = baseInformation;
         this.defaultDuration = defaultDuration;
@@ -25,18 +27,19 @@ public class WaitUtils {
         }
     }
 
+
     public WebElement waitForElementVisibleWithCustomTime(long mills, By locator) {
-        WebDriverWait wait = new WebDriverWait(driver,  Duration.ofMillis(mills));
+        WebDriverWait wait = new WebDriverWait(getDriver(),  Duration.ofMillis(mills));
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     public WebElement waitForElementVisibleWithCustomTime(long mills, WebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver,  Duration.ofMillis(mills));
+        WebDriverWait wait = new WebDriverWait(getDriver(),  Duration.ofMillis(mills));
         return wait.until(ExpectedConditions.visibilityOf(element));
     }
 
     public WebElement waitForElementclicableWithCustomTime(long mills, WebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver,  Duration.ofMillis(mills));
+        WebDriverWait wait = new WebDriverWait(getDriver(),  Duration.ofMillis(mills));
         return wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 
@@ -70,14 +73,14 @@ public class WaitUtils {
     }
 
     public List<WebElement> waitForAllElementsVisible(List<WebElement> elements) {
-        WebDriverWait wait = new WebDriverWait(driver, defaultDuration);
+        WebDriverWait wait = new WebDriverWait(getDriver(), defaultDuration);
         wait.until(ExpectedConditions.visibilityOfAllElements(elements));
         return elements;
     }
 
 
     public void waitForElementAbsent(WebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver, defaultDuration);
+        WebDriverWait wait = new WebDriverWait(getDriver(), defaultDuration);
         wait.until(ExpectedConditions.invisibilityOf(element));
     }
 
@@ -101,6 +104,9 @@ public class WaitUtils {
         waitForElementPresent(30000, element);
         waitFor(1000);
         return element;
+    }
+    public void clickWithJS(WebElement element) {
+        ((JavascriptExecutor) BaseInformation.getDriver()).executeScript("arguments[0].click();", element);
     }
 
 }
