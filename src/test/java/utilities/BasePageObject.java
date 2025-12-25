@@ -12,7 +12,7 @@ import java.time.Duration;
 
 public class BasePageObject {
     private ElementLocatorFactory rootFactory;
-    private final Duration defaultDuration = Duration.ofSeconds(10);;
+    private final Duration defaultDuration = Duration.ofSeconds(10);
     private BaseInformation baseInformation;
     private WaitUtils waitUtils;
     private WebElementUtils webElementUtils;
@@ -31,6 +31,7 @@ public class BasePageObject {
         try{
             getWaitUtils().waitForElementVisible(locator);
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
 
         }
         rootFactory = new DefaultElementLocatorFactory(
