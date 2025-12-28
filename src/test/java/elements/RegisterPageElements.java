@@ -50,11 +50,11 @@ public class RegisterPageElements {
     @FindBy(css = "a.level0.has-children[href='https://ecommerce.tealiumdemo.com/women.html']")
     public WebElement WomanButton;
 
-    @FindBy(css = "div.page-title.category-title h1")
-    public WebElement womanText;
 
     @FindBy(css = ".page-title h1")
     public WebElement registerText;
+
+
 
 
 }
