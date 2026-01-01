@@ -6,10 +6,16 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 public class WaitUtils {
     private BaseInformation baseInformation;
     private Duration defaultDuration;
+    private WebDriverWait wait;
 
     private WebDriver getDriver() {
         return BaseInformation.getDriver();
@@ -17,6 +23,7 @@ public class WaitUtils {
     public WaitUtils(BaseInformation baseInformation, Duration defaultDuration) {
         this.baseInformation = baseInformation;
         this.defaultDuration = defaultDuration;
+        this.wait = new WebDriverWait(BaseInformation.getDriver(), Duration.ofSeconds(10));
     }
 
     public static void waitFor(long mills) {
@@ -107,6 +114,12 @@ public class WaitUtils {
     }
     public void clickWithJS(WebElement element) {
         ((JavascriptExecutor) BaseInformation.getDriver()).executeScript("arguments[0].click();", element);
+    }
+
+    public void waitForUrlToContain(String fraction) {
+        // This tells Selenium to pause until the URL changes
+        // to include the text you provided (like "order=price")
+        wait.until(ExpectedConditions.urlContains(fraction));
     }
 
 }
