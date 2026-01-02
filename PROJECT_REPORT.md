@@ -1,4 +1,37 @@
-# Automation Testing Project - Comprehensive Documentation
+---
+
+<div align="center">
+
+<img src="https://universitetipolis.edu.al/wp-content/uploads/2022/09/Universiteti_Polis.svg_.png" alt="Universiteti Polis Logo" height="500">
+
+<br/>
+
+# Automation Testing Project
+## Comprehensive Documentation
+
+<br/>
+
+**Automation Testing Workshop**
+
+<br/>
+
+**Project Team:**
+
+Jurgen Tafaj  
+Izmiri Ahmetaj  
+Skerdilajd Hakarepi  
+Eniano Kadri  
+Serafina Selmani
+
+<br/>
+
+---
+
+</div>
+
+<br/>
+
+---
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
