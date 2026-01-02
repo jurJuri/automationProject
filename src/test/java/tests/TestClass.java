@@ -17,7 +17,7 @@ public class TestClass {
 
     @Test
     public void test() {
-        tests.sixthTestMethod();
+        tests.eighthTestMethod();
     }
 
 }

@@ -9,10 +9,37 @@ import org.testng.Assert;
 import utilities.BaseInformation;
 import utilities.BasePageObject;
 
+import java.util.List;
+
 public class StylingPage {
     BasePageObject basePageObject = new BasePageObject(BaseInformation.getBaseInformation());
     StylingElements stylingElements =  new StylingElements();
 
+    //pop up
+    public void handlePrivacyPopup() {
+        try {
+            // Wait a few seconds to see if it appears
+            Thread.sleep(2000);
+            if (stylingElements.optOutRadioButton.isDisplayed()) {
+                // 1. Click Opt-Out
+                basePageObject.getWaitUtils().waitForElementClickable(stylingElements.optOutRadioButton).click();
+
+                // 2. Click Submit/Save if it exists
+                try {
+                    stylingElements.privacySubmitButton.click();
+                } catch (Exception e) {
+                    // If no button, try clicking the radio label or just use JS to hide the div
+                    ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+                            .executeScript("document.getElementsByClassName('privacy_prompt')[0].style.display='none';");
+                }
+                System.out.println("Privacy popup dismissed.");
+            }
+        } catch (Exception e) {
+            System.out.println("Privacy popup not found, continuing...");
+        }
+    }
+
+    // task 3 -----------------
     public StylingPage(){
         PageFactory.initElements(BaseInformation.getDriver(), this);
     }
@@ -111,16 +138,44 @@ public class StylingPage {
     }
 
     public void verifyBlackColorBorder() {
-        // Blue color provided: #3399cc -> rgba(51, 153, 204, 1)
-        String expectedBlue = "rgb(51, 153, 204)";
+        // #3399cc is rgb(51, 153, 204)
+        String expectedBlue = "51, 153, 204";
 
-        for (WebElement product : stylingElements.allProductItems) {
-            // Find the 'Black' swatch within this specific product
-            // Based on HTML, selected swatches get the 'selected' class on the <li> parent
-            WebElement blackSwatch = product.findElement(By.cssSelector("li.option-black.selected a.swatch-link"));
+        // 1. Wait for the 'Currently Shopping by' indicator to ensure AJAX finished
+        basePageObject.getWaitUtils().waitForElementVisible(By.cssSelector(".currently .value"));
 
-            String actualBorderColor = blackSwatch.getCssValue("border-color");
-            Assert.assertEquals(actualBorderColor, expectedBlue, "The selected black swatch border is not blue!");
+        // 2. Get the list of products
+        List<WebElement> products = BaseInformation.getDriver().findElements(By.cssSelector("ul.products-grid li.item"));
+
+        for (int i = 0; i < products.size(); i++) {
+            boolean colorMatched = false;
+            String actualColor = "";
+
+            // Retry loop (3 attempts) to give CSS time to 'settle'
+            for (int retry = 0; retry < 3; retry++) {
+                try {
+                    // Refresh product reference to avoid StaleElement
+                    WebElement product = BaseInformation.getDriver().findElements(By.cssSelector("ul.products-grid li.item")).get(i);
+                    WebElement blackSwatch = product.findElement(By.cssSelector("li.option-black.selected a.swatch-link"));
+
+                    actualColor = blackSwatch.getCssValue("border-top-color");
+
+                    // Debug print: helps you see what is actually happening!
+                    System.out.println("Product " + (i + 1) + " color found: " + actualColor);
+
+                    if (actualColor.contains(expectedBlue)) {
+                        colorMatched = true;
+                        break;
+                    }
+                    // If it's not blue yet, wait 500ms and try again
+                    Thread.sleep(500);
+                } catch (Exception e) {
+                    // Handle stale element by retrying the same index
+                }
+            }
+
+            Assert.assertTrue(colorMatched,
+                    "Product " + (i + 1) + " swatch border was [" + actualColor + "] but expected blue [" + expectedBlue + "]");
         }
     }
 
@@ -129,17 +184,23 @@ public class StylingPage {
     }
 
     public void verifyProductCountAndPrice(int expectedCount, double min, double max) {
-        // Verify Count
-        Assert.assertEquals(stylingElements.allProductItems.size(), expectedCount, "Product count does not match!");
+        // 1. Wait for URL to update (uses the method we just added)
+        basePageObject.getWaitUtils().waitForUrlContains("price=");
 
-        // Verify individual prices
-        for (WebElement priceElement : stylingElements.allProductPrices) {
-            // Clean the price string (remove $ and commas)
-            String priceText = priceElement.getText().replace("$", "").replace(",", "").trim();
-            double actualPrice = Double.parseDouble(priceText);
+        // 2. Refresh the list of prices to avoid StaleElementReferenceException
+        List<WebElement> priceElements = BaseInformation.getDriver().findElements(By.cssSelector(".col-main .products-grid > li.item"));
 
-            Assert.assertTrue(actualPrice >= min && actualPrice <= max,
-                    "Price " + actualPrice + " is out of range [" + min + "-" + max + "]");
+        // 3. Verify count
+        Assert.assertEquals(priceElements.size(), expectedCount, "Product count mismatch!");
+
+        // 4. Verify ranges
+        for (WebElement priceElement : priceElements) {
+            String priceText = priceElement.getText().replaceAll("[^0-9.]", "").trim();
+            if (!priceText.isEmpty()) {
+                double actualPrice = Double.parseDouble(priceText);
+                Assert.assertTrue(actualPrice >= min && actualPrice <= max,
+                        "Price " + actualPrice + " is out of range!");
+            }
         }
     }
 }

@@ -11,6 +11,15 @@ public class StylingElements {
     public StylingElements(){
         PageFactory.initElements(BaseInformation.getDriver(), this);
     }
+    // pop up
+    // Privacy Popup Elements
+    @FindBy(id = "privacy_pref_optout")
+    public WebElement optOutRadioButton;
+
+    // Usually there is a 'Confirm' or 'Submit' button in these prompts.
+    // If there isn't one, we will use a JS script to hide it.
+    @FindBy(css = ".privacy_prompt_content button, .privacy_prompt_content input[type='submit']")
+    public WebElement privacySubmitButton;
 
     // task 3 elements
     @FindBy(css = "li.view-all a[href*='women.html']")
@@ -45,8 +54,8 @@ public class StylingElements {
     public static WebElement viewAllSaleLink;
 
 // This targets the individual product cards in the grid
-    @FindBy(css = "ul.products-grid li.item")
-    public List<WebElement> allProductItems;
+//    @FindBy(css = "ul.products-grid li.item")
+//    public List<WebElement> allProductItems;
 
     // task 5
     // Point 1: Men Menu
@@ -69,8 +78,14 @@ public class StylingElements {
     public WebElement priceFilterFirstOption;
 
     // Price elements for verification
-    @FindBy(css = ".price-box .price")
-    public List<WebElement> allProductPrices;
+//    @FindBy(css = ".price-box .price")
+//    public List<WebElement> allProductPrices;
 
+    @FindBy(css = ".col-main .products-grid > li.item")
+    public List<WebElement> allProductItems;
+
+    // Also update the price selector to be specific to the main grid
+    @FindBy(css = ".col-main .products-grid .price-box .regular-price .price, .col-main .products-grid .price-box .special-price .price")
+    public List<WebElement> allProductPrices;
     // This finds all the rows in the wishlist table so we can count them
 }

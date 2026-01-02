@@ -107,6 +107,10 @@ public class WaitUtils {
         throw new AssertionError("Target element absent");
     }
 
+    public boolean waitForUrlContains(String fraction) {
+        // This waits until the URL changes to include the filter (e.g., "price=70-")
+        return wait.until(org.openqa.selenium.support.ui.ExpectedConditions.urlContains(fraction));
+    }
     public WebElement waitForElementPresent(WebElement element) {
         waitForElementPresent(30000, element);
         waitFor(1000);
