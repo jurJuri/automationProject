@@ -11,6 +11,7 @@ public class WebElementUtils {
     private final BaseInformation baseInformation;
     private final WaitUtils waitUtils;
 
+    BasePageObject basePageObject = new BasePageObject(BaseInformation.getBaseInformation());
 
     public WebElementUtils(BaseInformation baseInformation, Duration defaultDuration) {
         this.baseInformation = baseInformation;
@@ -74,4 +75,6 @@ public class WebElementUtils {
             return false;
         }
     }
+
+
 }

@@ -118,6 +118,7 @@ public class ShoppingItemsPage {
         js.executeScript("arguments[0].click();", element);
     }
 
+
     public void clickMyWishlistFromMenu() {
         // This selector finds any link inside the account header that leads to the wishlist
         String wishlistSelector = "#header-account a[href*='/wishlist/']";
@@ -169,9 +170,28 @@ public class ShoppingItemsPage {
         }
     }
 
+//    public void clickAddToCart() {
+//        basePageObject.getWaitUtils().waitForElementClickable(elements.addToCartButton).click();
+//    }
+
     public void clickAddToCart() {
-        basePageObject.getWaitUtils().waitForElementClickable(elements.addToCartButton).click();
+        // Use the robust helper instead of simple .click()
+        // This fixes the "orange notice container" blocking the button on small screens
+        WebElement btn = elements.addToCartButton;
+
+        // 1. Scroll into view (Center)
+        ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+                .executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", btn);
+
+        // 2. Click (with JS Fallback)
+        try {
+            basePageObject.getWaitUtils().waitForElementClickable(btn).click();
+        } catch (Exception e) {
+            ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+                    .executeScript("arguments[0].click();", btn);
+        }
     }
+
 
     public void verifyAddToCartSuccess() {
         basePageObject.getWaitUtils().waitForElementVisible(elements.successMessage);
@@ -297,50 +317,75 @@ public class ShoppingItemsPage {
             return 0;
         }
     }
-
     public void removeFirstItem() {
         int attempts = 0;
         while (attempts < 3) {
             try {
-                // 1. Fresh Lookup
                 List<WebElement> buttons = BaseInformation.getDriver().findElements(By.cssSelector(".btn-remove2"));
-
-                if (buttons.isEmpty()) {
-                    System.out.println("No delete buttons found.");
-                    break;
-                }
+                if (buttons.isEmpty()) break;
 
                 WebElement btn = buttons.get(0);
 
-                // 2. Scroll to the element (Helps if it's off-screen)
+                // FIX: Scroll to center so header/footer don't cover it
                 ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
-                        .executeScript("arguments[0].scrollIntoView(true);", btn);
+                        .executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", btn);
 
-                // Small pause to let scrolling finish
-                try { Thread.sleep(500); } catch (Exception e) {}
-
-                // 3. FORCE CLICK via Javascript
-                // This fixes the "Timeout waiting for element to be clickable" error
+                // FIX: Force Click
                 ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
                         .executeScript("arguments[0].click();", btn);
 
-                // 4. Wait for the page reload to complete
-                // The cart page reloads fully after deletion. We wait to ensure the next step doesn't read stale data.
                 try { Thread.sleep(4000); } catch (Exception e) {}
+                return;
 
-                return; // Success, exit method
-
-            } catch (org.openqa.selenium.StaleElementReferenceException e) {
-                // Trap: If the element changed while we were scrolling/clicking
-                System.out.println("Stale element caught. Retrying attempt " + (attempts + 1) + "...");
-                attempts++;
             } catch (Exception e) {
-                // Trap: Any other weird error
-                System.out.println("Error clicking remove button: " + e.getMessage());
                 attempts++;
             }
         }
     }
+
+//    public void removeFirstItem() {
+//        int attempts = 0;
+//        while (attempts < 3) {
+//            try {
+//                // 1. Fresh Lookup
+//                List<WebElement> buttons = BaseInformation.getDriver().findElements(By.cssSelector(".btn-remove2"));
+//
+//                if (buttons.isEmpty()) {
+//                    System.out.println("No delete buttons found.");
+//                    break;
+//                }
+//
+//                WebElement btn = buttons.get(0);
+//
+//                // 2. Scroll to the element (Helps if it's off-screen)
+//                ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+//                        .executeScript("arguments[0].scrollIntoView(true);", btn);
+//
+//                // Small pause to let scrolling finish
+//                try { Thread.sleep(500); } catch (Exception e) {}
+//
+//                // 3. FORCE CLICK via Javascript
+//                // This fixes the "Timeout waiting for element to be clickable" error
+//                ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+//                        .executeScript("arguments[0].click();", btn);
+//
+//                // 4. Wait for the page reload to complete
+//                // The cart page reloads fully after deletion. We wait to ensure the next step doesn't read stale data.
+//                try { Thread.sleep(4000); } catch (Exception e) {}
+//
+//                return; // Success, exit method
+//
+//            } catch (org.openqa.selenium.StaleElementReferenceException e) {
+//                // Trap: If the element changed while we were scrolling/clicking
+//                System.out.println("Stale element caught. Retrying attempt " + (attempts + 1) + "...");
+//                attempts++;
+//            } catch (Exception e) {
+//                // Trap: Any other weird error
+//                System.out.println("Error clicking remove button: " + e.getMessage());
+//                attempts++;
+//            }
+//        }
+//    }
     public void verifyCartIsEmpty() {
         // 1. Wait for the 'Shopping Cart is Empty' title
         basePageObject.getWaitUtils().waitForElementVisible(elements.emptyCartPageTitle);

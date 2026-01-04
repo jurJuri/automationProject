@@ -133,8 +133,44 @@ public class StylingPage {
         basePageObject.getWaitUtils().waitForElementClickable(stylingElements.viewAllMenLink).click();
     }
 
+//    public void filterByBlack() {
+//        basePageObject.getWaitUtils().waitForElementClickable(stylingElements.blackColorSidebarFilter).click();
+//    }
+
+    // Inside StylingPage.java
+
     public void filterByBlack() {
-        basePageObject.getWaitUtils().waitForElementClickable(stylingElements.blackColorSidebarFilter).click();
+        // Scroll element to center before clicking
+        WebElement filter = stylingElements.blackColorSidebarFilter;
+
+        ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+                .executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", filter);
+
+        try {
+            basePageObject.getWaitUtils().waitForElementClickable(filter).click();
+        } catch (Exception e) {
+            // Fallback if footer still blocks it
+            ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+                    .executeScript("arguments[0].click();", filter);
+        }
+    }
+
+    public void filterByPriceRange() {
+        WebElement priceOpt = stylingElements.priceFilterFirstOption;
+
+        // Scroll to center
+        ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+                .executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", priceOpt);
+
+        try {
+            basePageObject.getWaitUtils().waitForElementClickable(priceOpt).click();
+        } catch (Exception e) {
+            ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+                    .executeScript("arguments[0].click();", priceOpt);
+        }
+
+        // Wait for the URL to change (Test 5 Logic)
+        basePageObject.getWaitUtils().waitForUrlContains("price=");
     }
 
     public void verifyBlackColorBorder() {
@@ -179,9 +215,9 @@ public class StylingPage {
         }
     }
 
-    public void filterByPriceRange() {
-        basePageObject.getWaitUtils().waitForElementClickable(stylingElements.priceFilterFirstOption).click();
-    }
+//    public void filterByPriceRange() {
+//        basePageObject.getWaitUtils().waitForElementClickable(stylingElements.priceFilterFirstOption).click();
+//    }
 
     public void verifyProductCountAndPrice(int expectedCount, double min, double max) {
         // 1. Wait for URL to update (uses the method we just added)
@@ -203,4 +239,6 @@ public class StylingPage {
             }
         }
     }
+
+
 }

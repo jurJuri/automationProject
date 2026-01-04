@@ -67,4 +67,23 @@ public class BasePageObject {
         return baseInformation;
     }
 
+    public void scrollAndClick(WebElement element) {
+        // 1. Scroll the element into view (align to center/top to avoid footer coverage)
+        ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+                .executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", element);
+
+        // 2. Wait a split second for scrolling to finish
+        try { Thread.sleep(500); } catch (InterruptedException e) {}
+
+        // 3. Try standard click first
+        try {
+            getWaitUtils().waitForElementClickable(element).click();
+        } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+            // 4. Fallback: Force JS Click if still covered
+            System.out.println("Standard click intercepted. Using JS Click fallback.");
+            ((org.openqa.selenium.JavascriptExecutor) BaseInformation.getDriver())
+                    .executeScript("arguments[0].click();", element);
+        }
+    }
+
 }
